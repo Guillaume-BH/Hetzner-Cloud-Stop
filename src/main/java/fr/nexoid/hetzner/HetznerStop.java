@@ -27,8 +27,7 @@ public class HetznerStop extends JavaPlugin {
     @Override
     public void onDisable() {
         try {
-            Map<String, String> serverList = getInstancesList();
-            for (Map.Entry<String, String> entry : serverList.entrySet()) {
+            for (Map.Entry<Integer, String> entry : getInstancesList().entrySet()) {
                 if (entry.getValue().equals(this.getPublicAddress())) {
                     this.stopServer(entry.getKey());
                     System.out.println(LOG_PREFIX + "Successfully deleted this server from OVH.");
@@ -46,7 +45,7 @@ public class HetznerStop extends JavaPlugin {
      * @param idServer the id of the server to stop
      * @throws IOException if an error occurs while stopping the server
      */
-    private void stopServer(String idServer) throws IOException, NoSuchAlgorithmException {
+    private void stopServer(int idServer) throws IOException, NoSuchAlgorithmException {
         Response response = Request.delete("https://api.hetzner.cloud/v1/servers/" + idServer)
                 .addHeader("Authorization", "Bearer " + apiToken)
                 .execute();
@@ -64,16 +63,16 @@ public class HetznerStop extends JavaPlugin {
      * @return a map of instances id and their public IP
      * @throws IOException if an error occurs while getting the instances list
      */
-    private Map<String, String> getInstancesList() throws IOException, NoSuchAlgorithmException {
+    private Map<Integer, String> getInstancesList() throws IOException, NoSuchAlgorithmException {
         Response response = Request.get("https://api.hetzner.cloud/v1/servers")
                 .addHeader("Authorization", "Bearer " + apiToken)
                 .execute();
 
         JSONArray servers = new JSONObject(response.returnContent().asString()).getJSONArray("servers");
-        Map<String, String> instances = new HashMap<>();
+        Map<Integer, String> instances = new HashMap<>();
         for (int i = 0; i < servers.length(); i++) {
             JSONObject s = servers.getJSONObject(i);
-            String id = s.getString("id");
+            int id = s.getInt("id");
             String ip = s.getJSONObject("public_net").getJSONObject("ipv4").getString("ip");
             instances.put(id, ip);
         }
