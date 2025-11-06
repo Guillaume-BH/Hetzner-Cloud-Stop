@@ -1,5 +1,5 @@
 name: Reloaded-Hetzner-Stop
 version: "${project.version}"
-main: fr.reloaded.hetzner.HetznerStop
+main: fr.nexoid.hetzner.HetznerStop
 author: Lastril
 description: "${project.description}"
